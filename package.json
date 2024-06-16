@@ -1,0 +1,28 @@
+{
+  "name": "aide-de-camp",
+  "version": "1.0.0",
+  "description": "Bot Discord pour l'armée rouge en cours de développement",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GuillaumeLFC/Aide-De-Camp.git"
+  },
+  "author": "GuillaumeLFC",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GuillaumeLFC/Aide-De-Camp/issues"
+  },
+  "homepage": "https://github.com/GuillaumeLFC/Aide-De-Camp#readme",
+  "dependencies": {
+    "@discordjs/builders": "^1.8.2",
+    "@discordjs/rest": "^2.3.0",
+    "@types/node": "^20.14.2",
+    "discord-api-types": "^0.37.89",
+    "discord.js": "^13.17.1",
+    "dotenv": "^16.4.5",
+    "ts-node": "^10.9.2"
+  }
+}
