@@ -1,15 +1,41 @@
 import { Intents, Collection } from "discord.js";
 import {CustomClient} from "./types/client";
-import dotenv  from "dotenv";
 import  fs  from "node:fs";
 import path  from "node:path";
 import { Command } from "./types/command";
+import { sequelize, DatabaseConnection } from "./database/sequelize"
 
-dotenv.config();
+//Ce code est nécessaire pour bien fermer les connections à la base de donnée en cas d'erreurs 
+
+async function shutdown() {
+  try {
+    await sequelize.close();
+    console.log("Connexion à la base de donnée fermée");
+    process.exit(0);
+  } catch (error) {
+    console.error("Impossible de fermer la connexion à la base de donnée !", error);
+    process.exit(1);
+  }
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
+
+process.on('uncaughtException', (error) => {
+  console.error('Uncaught Exception:', error);
+  shutdown();
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  shutdown();
+});
+
+DatabaseConnection();
+
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
 const client : CustomClient = new CustomClient({intents: [Intents.FLAGS.GUILDS] });
-
 
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
