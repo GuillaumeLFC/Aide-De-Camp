@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import {CommandInteraction, GuildMember } from "discord.js";
+import {CommandInteraction, GuildMember , CommandInteractionOptionResolver} from "discord.js";
 import { PermissionFlagsBits} from "discord-api-types/v10"
 import { Command } from "../types/command";
 import { sanitizeStringJS } from "../utils/sanitization";
@@ -37,18 +37,20 @@ const goulagCommand : Command = {
    
     try {
        if (!interaction.inCachedGuild()) {
-        await interaction.reply("Le server n'est pas mis en cache ???? Il y a une giga couille dans le paté mentionne CX");
+        await interaction.reply("Le server n'est pas mis en cache ???? Il y a une giga couille dans le paté contacte le support");
         return;
     };
 
-      const cible : GuildMember | null = interaction.options.getMember("soldat") as GuildMember | null;
+      const options : CommandInteractionOptionResolver = interaction.options as CommandInteractionOptionResolver;
+
+      const cible : GuildMember | null = options.getMember("soldat") as GuildMember | null;
       if (!cible) {
         await interaction.reply({content : "Tiens ? Je n'ai trouvé aucun soldat de ce nom dans les dossiers administratifs, êtes vous sûr de son nom ?", ephemeral : true});
         return;
       }
       const commanditaire : GuildMember = interaction.member;
-      const motif : string | null = sanitizeStringJS(interaction.options.getString("prétexte", false));
-      const dureeMinutes : number | null = interaction.options.getInteger("durée", false);
+      const motif : string | null = sanitizeStringJS(options.getString("prétexte", false));
+      const dureeMinutes : number | null = options.getInteger("durée", false);
 
       if (!hasGreaterPermissions(commanditaire, cible, interaction.guild)){
         await interaction.reply("Navré, le pot de vin n'est pas suffisant pour que j'envoie au goulag un de tes supérieurs.")
@@ -66,7 +68,6 @@ const goulagCommand : Command = {
       }
     } catch (error) {
       console.error(error);
-      await interaction.reply({content : "Aie, un problème est survenu :(", ephemeral: true});
     }
     },
 };
