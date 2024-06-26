@@ -1,9 +1,9 @@
-import { Intents, Collection } from "discord.js";
+import { ClientEvents, Collection, GatewayIntentBits } from "discord.js";
 import {CustomClient} from "./types/client";
 import  fs  from "node:fs";
 import path  from "node:path";
-import { Command } from "./types/command";
 import { sequelize, DatabaseConnection } from "./database/sequelize"
+import { configDotenv } from "dotenv";
 
 //Ce code est nécessaire pour bien fermer les connections à la base de donnée en cas d'erreurs 
 
@@ -35,7 +35,7 @@ DatabaseConnection();
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
-const client : CustomClient = new CustomClient({intents: [Intents.FLAGS.GUILDS] });
+const client : CustomClient = new CustomClient({intents: [GatewayIntentBits.Guilds] });
 
 client.commands = new Collection();
 const commandsPath = path.join(__dirname, 'commands');
@@ -53,21 +53,18 @@ for (const file of commandFiles) {
   }
 }
 
-client.once('ready', () => {
-  console.log("Bot lancé !");
-});
+// TODO : ce code pour importer les events n'est pas du bon typescript, il faut le refaire pour garantir un bon typage
+const eventsPath = path.join(__dirname, 'events');
+const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.js'));
 
-client.on('interactionCreate', async interaction => {
-  if (!interaction.isCommand()) return;
-
-  const command : Command | undefined = client.commands.get(interaction.commandName);
-
-  try {
-    await command?.execute(interaction);
-  } catch (error) {
-    console.error(error);
-    await interaction.reply({content : "Oh oh il y a eu un problème :(", ephemeral: true});
-  }
-});
+for (const file of eventFiles) {
+	const filePath = path.join(eventsPath, file);
+	const event = require(filePath);
+	if (event.once) {
+		client.once(event.name, (...args) => event.execute(...args));
+	} else {
+		client.on(event.name, (...args) => event.execute(...args));
+	}
+}
 
 client.login(DISCORD_TOKEN);
