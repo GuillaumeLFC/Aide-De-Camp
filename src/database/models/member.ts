@@ -10,6 +10,3 @@ export default class MemberModel extends Model {
   declare userId : string;
 }
 
-MemberModel.belongsTo(GuildModel, {
-    foreignKey: {name : 'guildId'}
-  })

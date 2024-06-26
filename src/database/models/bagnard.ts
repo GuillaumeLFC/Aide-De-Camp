@@ -20,7 +20,7 @@ export default class BagnardModel extends Model {
   @Column(DataType.INTEGER)
   declare dureeMinutes ?: number | null;
   @AllowNull
-  @Column(DataType.NUMBER) 
+  @Column(DataType.INTEGER) 
   declare nbMinage?: number | null;
 
   //Timestamps
@@ -50,20 +50,3 @@ export default class BagnardModel extends Model {
   @BelongsToMany(() => RoleModel, () => BagnardRoles)
   declare bagnardRoles : RoleModel [];
 }
-
-//Associations
-
-BagnardModel.belongsTo(MemberModel,{
-    as : 'memberId',
-    foreignKey: { allowNull: false}
-  });
-
-BagnardModel.belongsTo(MemberModel, {
-  as: 'commanditaireId',
-  foreignKey: {allowNull: false}
-})
-
-BagnardModel.belongsToMany(RoleModel, {
-  as: 'bagnardId',
-  through : BagnardRoles});
-

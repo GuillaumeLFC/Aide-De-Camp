@@ -1,4 +1,4 @@
-import { AllowNull, Column, CreatedAt, HasOne, Model,  Table, UpdatedAt } from "sequelize-typescript";
+import { Column, CreatedAt, HasOne, Model,  Table, Unique, UpdatedAt } from "sequelize-typescript";
 import  GoulagModel  from "./goulag";
 
 /**
@@ -6,7 +6,8 @@ import  GoulagModel  from "./goulag";
   */
 @Table({tableName: 'Guilds'})
 export default class GuildModel extends Model {
-  //Fields
+  //Field
+  @Unique
   @Column
   declare guildDiscordId: string;
   
@@ -19,6 +20,17 @@ export default class GuildModel extends Model {
   //Associations
   @HasOne(() => GoulagModel)
   declare goulag : GoulagModel | null;
+
+  public static async registerGuild(guildDiscordId : string){
+    try {
+      if (await GuildModel.findOne({where : {guildDiscordId: guildDiscordId}})){
+        return;
+      }
+      await GuildModel.create({guildDiscordId: guildDiscordId});
+    } catch (error) {
+      console.error("Erreur lors de l'ajout à la base de donnée d'un serveur : \n", error);
+      throw error;
+    }
+  }
 }
 
-GuildModel.hasOne(GoulagModel);

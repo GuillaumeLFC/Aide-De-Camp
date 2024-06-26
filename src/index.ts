@@ -31,7 +31,6 @@ process.on('unhandledRejection', (reason, promise) => {
   shutdown();
 });
 
-DatabaseConnection();
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
 
@@ -67,4 +66,8 @@ for (const file of eventFiles) {
 	}
 }
 
-client.login(DISCORD_TOKEN);
+async function main(){
+  await DatabaseConnection();
+  client.login(DISCORD_TOKEN);
+}
+main();

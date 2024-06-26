@@ -17,4 +17,3 @@ export default class RoleModel extends Model {
   @BelongsToMany(() => BagnardModel, () => BagnardRole)
   declare bagnards: BagnardModel [];
 }
-RoleModel.belongsToMany(BagnardModel, {through: BagnardRole, uniqueKey: 'roleId'});
