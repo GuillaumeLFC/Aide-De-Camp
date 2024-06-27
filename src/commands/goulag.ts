@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders";
-import {CommandInteraction, GuildMember , CommandInteractionOptionResolver} from "discord.js";
+import {ChatInputCommandInteraction, GuildMember } from "discord.js";
 import { PermissionFlagsBits} from "discord-api-types/v10"
 import { Command } from "../types/command";
 import { sanitizeStringJS } from "../utils/sanitization";
@@ -31,9 +31,9 @@ const goulagCommand : Command = {
       option.setName("durée")
             .setDescription("Le temps de son séjour en minutes")
             .setRequired(false)
-  )as SlashCommandBuilder, //Typescript a visiblement pas compris le type
+  ),
     
-  async execute (interaction : CommandInteraction) { 
+  async execute (interaction : ChatInputCommandInteraction) { 
    
     try {
        if (!interaction.inCachedGuild()) {
@@ -41,16 +41,14 @@ const goulagCommand : Command = {
         return;
     };
 
-      const options : CommandInteractionOptionResolver = interaction.options as CommandInteractionOptionResolver;
-
-      const cible : GuildMember | null = options.getMember("soldat") as GuildMember | null;
+      const cible : GuildMember | null = interaction.options.getMember("soldat")
       if (!cible) {
         await interaction.reply({content : "Tiens ? Je n'ai trouvé aucun soldat de ce nom dans les dossiers administratifs, êtes vous sûr de son nom ?", ephemeral : true});
         return;
       }
       const commanditaire : GuildMember = interaction.member;
-      const motif : string | null = sanitizeStringJS(options.getString("prétexte", false));
-      const dureeMinutes : number | null = options.getInteger("durée", false);
+      const motif : string | null = sanitizeStringJS(interaction.options.getString("prétexte", false));
+      const dureeMinutes : number | null = interaction.options.getInteger("durée", false);
 
       if (!hasGreaterPermissions(commanditaire, cible, interaction.guild)){
         await interaction.reply("Navré, le pot de vin n'est pas suffisant pour que j'envoie au goulag un de tes supérieurs.")
@@ -59,6 +57,7 @@ const goulagCommand : Command = {
       
       if (!cible.manageable){
         await interaction.reply({content : `Oula si je donnais l'ordre d'envoyer ${cible.displayName} au goulag, je me ferais executer sur place ! \nÊtes vous sûr que j'ai l'accréditation nécéssaire ?`, ephemeral: true});
+        return;
       }
       await interaction.reply("https://tenor.com/view/swat-gif-17979428");
       try {

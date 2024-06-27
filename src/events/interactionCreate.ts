@@ -1,4 +1,4 @@
-import { Client, Events, Interaction } from "discord.js";
+import { ChatInputCommandInteraction, Client, Events, Interaction } from "discord.js";
 import {CustomEvent} from "../types/event";
 import { CustomClient } from "../types/client";
 import { Command } from "../types/command";
@@ -25,7 +25,7 @@ import { Command } from "../types/command";
 
 module.exports = {
   name: Events.InteractionCreate,
-  async execute(interaction : Interaction) {
+  async execute(interaction : ChatInputCommandInteraction ) {
   if (!interaction.isCommand()) return;
 
   const command : Command | undefined = (interaction.client as CustomClient).commands.get(interaction.commandName);
